@@ -29,7 +29,7 @@ export default {
   },
   methods: {
     async login() {
-      const url = "https://cordeiro.solarview.com.br/graphql"
+      const url = "https://solicitasol.cordeiro.com.br/graphql"
       const query = "mutation Logar($email: String!, $password: String!," +
           " $isRememberMe: Boolean, $forcarLogin: Boolean, $tokenTFA: String)" +
           " {\n  logar(email: $email, password: $password, isRememberMe: $isRememberMe," +

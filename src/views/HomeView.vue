@@ -104,7 +104,7 @@ export default {
   methods: {
     //autoexplicativo com o nome logout()
     async logout() {
-      const url = "https://cordeiro.solarview.com.br/graphql"
+      const url = "https://solicitasol.cordeiro.com.br/graphql"
       const query = "mutation Deslogar {\n deslogar\n}\n"
       const headers = {
         "Authorization": `Bearer ${window.token}`,

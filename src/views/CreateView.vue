@@ -527,7 +527,7 @@ export default {
     os ususarios responsáveis cadastrados na plataforma
      */
   async created(){
-    const url = "https://cordeiro.solarview.com.br/graphql"
+    const url = "https://solicitasol.cordeiro.com.br/graphql"
 
     const query = "query ListarUsuarios($first: Int, $offset:" +
           " Int, $empresaId: ID) {\n  listarUsuarios(first: $first," +
@@ -575,7 +575,7 @@ export default {
     após ela inicia as outras requisições
      */
     async criaUsuarioEmpresarial() {
-      const url = "https://cordeiro.solarview.com.br/graphql"
+      const url = "https://solicitasol.cordeiro.com.br/graphql"
 
       const query = "mutation CriarUsuarioEmpresarial($input: UserCreateInput!," +
           " $empresaInput: EmpresaCreateInput!)" +
@@ -641,7 +641,7 @@ export default {
     na criação de um gestor.
      */
     async logarComoEmpresa(){
-      const url = "https://cordeiro.solarview.com.br/graphql"
+      const url = "https://solicitasol.cordeiro.com.br/graphql"
 
       const query = "mutation LogarComoEmpresa($empresaId: Int!)" +
           " {\n  logarComoEmpresa(empresaId: $empresaId)" +
@@ -693,7 +693,7 @@ export default {
     o usuario gestor que é a vertente "representante".
      */
     async  criarPapel(){
-      const url = "https://cordeiro.solarview.com.br/graphql"
+      const url = "https://solicitasol.cordeiro.com.br/graphql"
 
       const query = "mutation CriarPapel($input: PapelCreateInput!) {\n " +
           " criarPapel(input: $input) {\n    id\n    nome\n  }\n}\n"
@@ -731,7 +731,7 @@ export default {
      seu papel designado.
        */
     async listarPapeis(){
-      const url = "https://cordeiro.solarview.com.br/graphql"
+      const url = "https://solicitasol.cordeiro.com.br/graphql"
 
       const query = "query ListarPapeis($first: Int, $offset: Int)" +
           " {\n  listarPapeis(first: $first, offset: $offset)" +
@@ -770,7 +770,7 @@ export default {
     ao email do gestor, apenas para não ficar em branco.
      */
     async contarEmpresas(){
-      const url = "https://cordeiro.solarview.com.br/graphql"
+      const url = "https://solicitasol.cordeiro.com.br/graphql"
 
       const query = "query ContarEmpresas($input: ContarEmpresaInput!)" +
           " {\n  contarEmpresas(input: $input)\n}\n"
@@ -805,7 +805,7 @@ export default {
     gestor para a API.
      */
     async criarUsuario() {
-      const url = "https://cordeiro.solarview.com.br/graphql"
+      const url = "https://solicitasol.cordeiro.com.br/graphql"
 
       const query = "mutation CriarUsuario($input: UserCreateInput!)" +
           " {\n criarUsuario(input: $input)" +
@@ -867,7 +867,7 @@ export default {
     numa variavel o valor nescessario para alteração do mesmo.
      */
     async listarTemplate(){
-      const url = "https://cordeiro.solarview.com.br/graphql"
+      const url = "https://solicitasol.cordeiro.com.br/graphql"
 
       const query = "query ListarTemplates($first: Int, $offset:" +
           " Int, $tipo: TemplateTipo, $nome: String) {\n" +
@@ -951,7 +951,7 @@ export default {
     informações como premissas.
       */
     async listarEmpresa() {
-      const url = "https://cordeiro.solarview.com.br/graphql"
+      const url = "https://solicitasol.cordeiro.com.br/graphql"
 
       const query = "query ListarEmpresas($input: ListarEmpresaInput!)" +
           " {\n listarEmpresas(input: $input) {\n" +
@@ -997,7 +997,7 @@ export default {
     do usuario dentro da plataforma.
      */
     async adcionarPermissaoAoPapel() {
-      const url = "https://cordeiro.solarview.com.br/graphql"
+      const url = "https://solicitasol.cordeiro.com.br/graphql"
 
       const query = "mutation AdicionarPermissaoAoPapel($id: ID!," +
           " $permissaoId: ID!) {\n adicionarPermissaoAoPapel(id:" +
@@ -1041,7 +1041,7 @@ export default {
     automaticamente.
      */
     async alterarPremissa(){
-      const url = "https://cordeiro.solarview.com.br/graphql"
+      const url = "https://solicitasol.cordeiro.com.br/graphql"
 
       const query = "mutation AlterarPremissa($input:" +
           " ConfigEmpresaInputPremissa!) {\n alterarPremissa(input:" +
@@ -1151,7 +1151,7 @@ export default {
     automaticamente.
      */
     async atualizarCustosInstalação(){
-      const url = "https://cordeiro.solarview.com.br/graphql"
+      const url = "https://solicitasol.cordeiro.com.br/graphql"
 
       const query = "mutation AtualizarCustosInstalacao($input:" +
           " CustosUpdateInput!) {\n atualizarCustos(input: $input)" +
@@ -1285,7 +1285,7 @@ export default {
      um novo financiamento
      */
     async listarFinanciamento(){
-      const url = "https://cordeiro.solarview.com.br/graphql"
+      const url = "https://solicitasol.cordeiro.com.br/graphql"
 
       const query = "query ListarFinanciamentos($first: Int, $offset:" +
           " Int) {\n  listarFinanciamentos(first: $first, offset:" +
@@ -1328,7 +1328,7 @@ export default {
     pelo simulador Solar
      */
     async listarRepresentantes(){
-      const url = "https://cordeiro.solarview.com.br/graphql"
+      const url = "https://solicitasol.cordeiro.com.br/graphql"
 
       const query = "query ListarRepresentantes {\n" +
           "  listarRepresentantes {\n    id\n    nome\n" +
@@ -1363,7 +1363,7 @@ export default {
     automaticamente.
      */
     async alteraFinanciamento(){
-      const url = "https://cordeiro.solarview.com.br/graphql"
+      const url = "https://solicitasol.cordeiro.com.br/graphql"
 
       const query = "mutation AlterarFinanciamento($id: ID!," +
           " $input: FinanciamentoUpdateInput!) {\n  " +
@@ -1436,7 +1436,7 @@ export default {
     integrações.
      */
     async alterarIntegracaoSimuladorSolar(){
-      const url = "https://cordeiro.solarview.com.br/graphql"
+      const url = "https://solicitasol.cordeiro.com.br/graphql"
 
       const query = "mutation AlterarIntegracaoSimuladorSolar($input:" +
           " InputSimuladorSolar!) {\n alterarIntegracaoSimuladorSolar" +
@@ -1601,7 +1601,7 @@ export default {
     template
      */
     async alteraTemplate(){
-      const url = "https://cordeiro.solarview.com.br/graphql"
+      const url = "https://solicitasol.cordeiro.com.br/graphql"
 
       const query = "mutation CriarTemplate($input: TemplateCreateInput!) {\n  criarTemplate(input: $input) {\n    id\n    tipo\n    nome\n  }\n}\n"
 
@@ -1636,7 +1636,7 @@ export default {
     do usuário gestor.
      */
     async deslogarComoEmpresa(){
-      const url = "https://cordeiro.solarview.com.br/graphql"
+      const url = "https://solicitasol.cordeiro.com.br/graphql"
 
       const query = "mutation DeslogarComo {\n  deslogarComo\n}\n"
 
@@ -1669,7 +1669,7 @@ export default {
     de menu lateral.
      */
     async logout() {
-      const url = "https://cordeiro.solarview.com.br/graphql"
+      const url = "https://solicitasol.cordeiro.com.br/graphql"
 
       const query = "mutation Deslogar {\n deslogar\n}\n"
 
