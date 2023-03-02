@@ -56,40 +56,40 @@
   <v-main id="principal">
     <v-container>
       <v-table id="tabela">
-        <td>
+        <td id="arrayRepreEmail">
           <tr class="list">E-mail representante</tr>
+          <hr>
           <template v-for="n in 15" :key="n">
             <tr>
               {{ this.arrayRepreEmail[n] }}
             </tr>
-            <hr>
           </template>
         </td>
-        <td>
+        <td id="arrayRepreNome">
           <tr class="list">Representante</tr>
+          <hr>
           <template v-for="n in 15" :key="n">
             <tr>
               {{ this.arrayRepreNome[n] }}
             </tr>
-            <hr>
           </template>
         </td>
-        <td>
+        <td id="arrayGestorEmail">
           <tr class="list">Gestor</tr>
+          <hr>
           <template v-for="n in 15" :key="n">
             <tr>
               {{ this.arrayGestorEmail[n] }}
             </tr>
-            <hr>
           </template>
         </td>
-        <td>
+        <td id="arrayGestorSenha">
           <tr class="list">Senha</tr>
+          <hr>
           <template v-for="n in 15" :key="n">
             <tr>
               {{ this.arrayGestorSenha[n] }}
             </tr>
-            <hr>
           </template>
         </td>
       </v-table>
@@ -112,12 +112,13 @@ export default {
       arrayRepreEmail: [],
       arrayRepreEmailTratado: [],
       arrayRepreNome: [],
+      arrayRepreNomeTratado: [],
       arrayGestorEmail: [],
+      arrayGestorEmailTratado: [],
       arrayGestorSenha: [],
-      teste: [],
-      representante: null,
-      gestor: []
-
+      arrayGestorSenhaTratado: [],
+      gestor: [],
+      representante: []
     })
   },
   beforeMount() {
@@ -135,13 +136,18 @@ export default {
               this.representante = doc.data()
 
                 this.arrayRepreEmail.push(this.representante.email)
-                console.log(this.arrayRepreEmail)
+
 
 
                 this.arrayRepreNome.push(this.representante.nome)
                 //console.log(this.arrayRepreNome)
 
               })
+            this.arrayRepreEmailTratado = JSON.stringify(this.arrayRepreEmail)
+            this.arrayRepreNomeTratado = JSON.stringify(this.arrayRepreNome)
+
+            console.log(this.arrayRepreEmailTratado)
+            console.log(this.arrayRepreNomeTratado)
           }).catch(err => {
         console.log(err.message)
       })
@@ -162,8 +168,11 @@ export default {
                 this.arrayGestorSenha.push(this.gestor.senhaUserResponsavel)
 
             })
-            console.log(JSON.stringify(this.arrayGestorSenha))
-            //console.log(this.gestor)
+            this.arrayGestorEmailTratado = JSON.stringify(this.arrayGestorEmail)
+            this.arrayGestorSenhaTratado = JSON.stringify(this.arrayGestorSenha)
+
+            console.log(this.arrayGestorEmailTratado)
+            console.log(this.arrayGestorSenhaTratado)
           }).catch(err => {
             console.log(err.message)
           })
@@ -201,17 +210,21 @@ export default {
 </script>
 
 <style scoped>
-#tabela{
-  background-color: #f2f2f2;
-  color: #222222;
-  text-align: center;
+#principal{
+  height: 100%;
 }
-.list{
-  font-size: 1.5rem;
-  text-align: center;
+#tabela{
+  background-color: #2e2e2e;
+  color: #bdbdbd;
+  border-radius: 8px;
+  max-height: available ;
+  width: 100%;
+  display: inline-block;
+  padding: 0.4rem;
+  border: solid #222222 0.8px;
+  box-shadow: 2px 3px 8px 0px #222222;
 }
 td{
-  background-color: #f2f2f2;
-  border: solid #222222 1px;
+  line-height: 2rem;
 }
 </style>
