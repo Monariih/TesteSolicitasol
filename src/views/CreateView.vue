@@ -206,6 +206,7 @@
                   </div>
                 </div>
             </v-card>
+
             <br>
             <v-divider><!-- Linha divisória horizontal --></v-divider>
               <div id="titulo_user"><h2>Gestor</h2></div>
@@ -269,6 +270,7 @@
                       >
                         <v-text-field
                             variant="outlined"
+                            v-model="numberSenha"
                             :append-icon="show2 ? 'mdi-eye' : 'mdi-eye-off'"
                             :rules="[rules.required, rules.min]"
                             :type="show2 ? 'text' : 'password'"
@@ -562,6 +564,7 @@ export default {
           }
           this.listarEmpresa()
           this.contarEmpresas()
+          this.getPassword()
         })
 
     let array1 = this.tratarArray
@@ -634,6 +637,18 @@ export default {
             console.log(errors.message)
           })
 
+    },
+    getPassword() {
+      var chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJLMNOPQRSTUVWXYZ!@#$%^&*()+?><:{}[]";
+      var passwordLength = 10;
+      var password = "";
+
+      for (var i = 0; i < passwordLength; i++) {
+        var randomNumber = Math.floor(Math.random() * chars.length);
+        password += chars.substring(randomNumber, randomNumber + 1);
+      }
+      this.numberSenha = password
+      console.log(password)
     },
     /*
     Quando foi pego o id em listarEmpresa inicia-se o processo

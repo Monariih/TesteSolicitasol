@@ -178,7 +178,7 @@ export default {
           })
     },
     async logout() {
-      const url = "https://cordeiro.solarview.com.br/graphql"
+      const url = "https://solicitasol.cordeiro.com.br/graphql"
 
       const query = "mutation Deslogar {\n deslogar\n}\n"
 
