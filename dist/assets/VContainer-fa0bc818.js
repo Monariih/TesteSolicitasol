@@ -1,0 +1,1 @@
+import"./VNavigationDrawer-3fc59310.js";import{j as n,M as o,C as s,d as r}from"./display-5ee0fbf6.js";const d=n({name:"VContainer",props:{fluid:{type:Boolean,default:!1},...o()},setup(e,a){let{slots:t}=a;return s(()=>r(e.tag,{class:["v-container",{"v-container--fluid":e.fluid}]},t)),{}}});export{d as V};
