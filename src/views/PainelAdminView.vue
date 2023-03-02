@@ -58,34 +58,38 @@
       <v-table id="tabela">
         <td>
           <tr class="list">E-mail representante</tr>
-          <template v-for="n in 4" :key="n">
+          <template v-for="n in 15" :key="n">
             <tr>
               {{ this.arrayRepreEmail[n] }}
             </tr>
+            <hr>
           </template>
         </td>
         <td>
           <tr class="list">Representante</tr>
-          <template v-for="n in 4" :key="n">
+          <template v-for="n in 15" :key="n">
             <tr>
               {{ this.arrayRepreNome[n] }}
             </tr>
+            <hr>
           </template>
         </td>
         <td>
           <tr class="list">Gestor</tr>
-          <template v-for="n in 4" :key="n">
+          <template v-for="n in 15" :key="n">
             <tr>
               {{ this.arrayGestorEmail[n] }}
             </tr>
+            <hr>
           </template>
         </td>
         <td>
           <tr class="list">Senha</tr>
-          <template v-for="n in 4" :key="n">
+          <template v-for="n in 15" :key="n">
             <tr>
               {{ this.arrayGestorSenha[n] }}
             </tr>
+            <hr>
           </template>
         </td>
       </v-table>

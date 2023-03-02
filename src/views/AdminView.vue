@@ -88,7 +88,7 @@ export default {
   },
   methods: {
     loginAdm(){
-      if(this.email != "admin.lucas.monari@cordeiro.com.br" && this.password != "Lum@5714"){
+      if(this.email != "admin.ti@painel.com" && this.password != "qaz@WSX"){
         alert("Senha e email incorretos tentar novamente")
       }else {
         router.push('/adminPainel')
