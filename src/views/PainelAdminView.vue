@@ -56,52 +56,58 @@
   <v-main id="principal">
     <v-container>
       <v-table id="tabela">
-        <td id="arrayRepreEmail">
-          <tr class="list">E-mail representante</tr>
-          <hr>
-          <template v-for="n in 15" :key="n">
-            <tr>
-              {{ this.arrayRepreEmail[n] }}
-            </tr>
-          </template>
-        </td>
-        <td id="arrayRepreNome">
-          <tr class="list">Representante</tr>
-          <hr>
-          <template v-for="n in 15" :key="n">
-            <tr>
-              {{ this.arrayRepreNome[n] }}
-            </tr>
-          </template>
-        </td>
-        <td id="arrayGestorEmail">
-          <tr class="list">Gestor</tr>
-          <hr>
-          <template v-for="n in 15" :key="n">
-            <tr>
-              {{ this.arrayGestorEmail[n] }}
-            </tr>
-          </template>
-        </td>
-        <td id="arrayGestorSenha">
-          <tr class="list">Senha</tr>
-          <hr>
-          <template v-for="n in 15" :key="n">
-            <tr>
-              {{ this.arrayGestorSenha[n] }}
-            </tr>
-          </template>
-        </td>
+        <tr>
+          <th>
+            Nomes
+          </th>
+          <th>
+            Email representante
+          </th>
+          <th>
+            Senha representante
+          </th>
+          <th>
+            Email Gestor
+          </th>
+          <th>
+            Senha Gestor
+          </th>
+          <th>
+            Iframe
+          </th>
+        </tr>
+        <tr v-for="(item, index) in ids">
+          <td>
+            {{ this.integradoresNome[index] }}
+          </td>
+          <td>
+            {{ this.integradoresEmailRepre[index] }}
+          </td>
+          <td>
+            {{ this.integradoresSenhaRepre[index] }}
+          </td>
+          <td>
+            {{ this.integradoresEmailGestor[index] }}
+          </td>
+          <td>
+            {{ this.integradoresPassGestor[index] }}
+          </td>
+          <td>
+            <textarea id="bar"><div><iframe src="https://solicitasol.cordeiro.com.br/simulador-solar/{{ this.integradoresTokenIframe[index] }}" name="iframeSimulador" frameborder="0" scrolling="no" allowfullscreen style="width: 100%;height: 100%;"> </iframe> <script> let iframe = document.querySelector("iframe[name=iframeSimulador]"); iframe.style.width = "100%"; window.addEventListener("message", function(e) { let { height } = e.data; iframe.style.height = height + "px"; } , false); </script> </div></textarea>
+          </td>
+        </tr>
       </v-table>
     </v-container>
   </v-main>
 </template>
 
+
 <script>
 import axios from "axios";
 import router from "@/router";
 import firebase from "firebase/compat";
-import {el} from "vuetify/locale";
+import { doc, getDoc } from "firebase/firestore/lite";
+import {proxyRefs} from "vue";
 
 export default {
   name: "PainelAdminView",
@@ -109,73 +115,95 @@ export default {
     return ({
       deslogar: false,
       drawer: null,
-      arrayRepreEmail: [],
-      arrayRepreEmailTratado: [],
-      arrayRepreNome: [],
-      arrayRepreNomeTratado: [],
-      arrayGestorEmail: [],
-      arrayGestorEmailTratado: [],
-      arrayGestorSenha: [],
-      arrayGestorSenhaTratado: [],
-      gestor: [],
-      representante: []
+      ids: [],
+      integradoresNome: [],
+      integradoresEmailRepre: [],
+      integradoresEmailGestor: [],
+      integradoresPassGestor: [],
+      integradoresTokenIframe: [],
+      integradoresSenhaRepre: [],
+      /*
+      ---------------------------
+       */
+      cordeiro: [],
+      cordeiroContacts: [],
+
     })
   },
   beforeMount() {
-    this.getRepresentante()
-    this.getGestor()
+    this.listarEmpresas()
+
   },
   methods: {
-    getRepresentante(){
-      const db = firebase.firestore()
 
-      db.collection('representante').get()
-          .then(snapshot => {
-            snapshot.docs.forEach(doc => {
-              doc.data()
-              this.representante = doc.data()
+    async listarEmpresas(){
+      const url = "https://solicitasol.cordeiro.com.br/graphql"
 
-                this.arrayRepreEmail.push(this.representante.email)
+      const query = "query ListarEmpresas($input: ListarEmpresaInput!)" +
+          " {\n listarEmpresas(input: $input) {\n" +
+          " id\n codigo\n nome" +
+          "\n status\n estado\n" +
+          " cidade\n usuarios\n" +
+          " propostasMes\n propostas\n" +
+          " dataInclusao\n dataExpiracao\n" +
+          " statusPagamento\n creditos\n }\n}\n"
 
+      const headers = {
+        "Authorization": `Bearer ${window.token}`,
+        "content-type": "application/json"
+      }
 
+      const queryGraphql = {
+        "operationName": "ListarEmpresas",
+        "query": query,
+        "variables": {
+          "input": {
+            "first": 10,
+            "offset": 0,
+          }
+        }
+      }
 
-                this.arrayRepreNome.push(this.representante.nome)
-                //console.log(this.arrayRepreNome)
-
-              })
-            this.arrayRepreEmailTratado = JSON.stringify(this.arrayRepreEmail)
-            this.arrayRepreNomeTratado = JSON.stringify(this.arrayRepreNome)
-
-            console.log(this.arrayRepreEmailTratado)
-            console.log(this.arrayRepreNomeTratado)
-          }).catch(err => {
-        console.log(err.message)
+      const response = await axios({
+        url: url,
+        method: 'post',
+        headers: headers,
+        data: queryGraphql
       })
-    },
-    getGestor(){
-      const db = firebase.firestore()
 
-      db.collection('empresa').get()
-          .then(snapshot => {
-            snapshot.docs.forEach(doc => {
-              doc.data()
-              this.gestor = doc.data()
+          .then(data => {
+            for (var i = 0; i < data.data.data.listarEmpresas.length; i++) {
+              this.ids.push(data.data.data.listarEmpresas[i].id)
+            }
+            this.getIntegrador()
 
-                this.arrayGestorEmail.push(this.gestor.emailUserResponsavel)
-                //console.log(this.arrayGestorEmail)
-
-
-                this.arrayGestorSenha.push(this.gestor.senhaUserResponsavel)
-
-            })
-            this.arrayGestorEmailTratado = JSON.stringify(this.arrayGestorEmail)
-            this.arrayGestorSenhaTratado = JSON.stringify(this.arrayGestorSenha)
-
-            console.log(this.arrayGestorEmailTratado)
-            console.log(this.arrayGestorSenhaTratado)
-          }).catch(err => {
-            console.log(err.message)
           })
+
+      console.log(this.ids)
+
+    },
+    async getIntegrador() {
+      for (var i = 0;i < this.ids.length; i++) {
+        let ref = doc(db, `/databases/cordeiro/contacts/svIntegrador.${this.ids[i]}`)
+
+        const docSnap = await getDoc(ref)
+        if (docSnap.exists()) {
+          this.integradoresNome.push(docSnap.data().name)
+          this.integradoresEmailRepre.push(docSnap.data().email)
+          this.integradoresEmailGestor.push(docSnap.data().ownerId)
+          this.integradoresPassGestor.push(docSnap.data().ownerPass)
+          this.integradoresTokenIframe.push(docSnap.data().tokenIframe)
+          this.integradoresSenhaRepre.push(docSnap.data().reprePass)
+        } else {
+          console.log("No integrador")
+        }
+
+      }
+
+      console.log(this.integradoresNome)
+      console.log(this.integradoresEmailRepre)
+      console.log(this.integradoresTokenIframe)
+
     },
     async logout() {
       const url = "https://solicitasol.cordeiro.com.br/graphql"
@@ -205,10 +233,10 @@ export default {
           )
 
     }
-  }
+  },
+
 }
 </script>
-
 <style scoped>
 #principal{
   height: 100%;
@@ -217,14 +245,14 @@ export default {
   background-color: #2e2e2e;
   color: #bdbdbd;
   border-radius: 8px;
-  max-height: available ;
   width: 100%;
-  display: inline-block;
   padding: 0.4rem;
-  border: solid #222222 0.8px;
   box-shadow: 2px 3px 8px 0px #222222;
 }
-td{
+#bar{
+  color: #bdbdbd;
+}
+tr{
   line-height: 2rem;
 }
 </style>

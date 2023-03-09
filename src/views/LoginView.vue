@@ -53,13 +53,20 @@ export default {
         data:queryGraphQl
       })
 
-      console.log(response)
-      this.token = response.data.data.logar.token
-      window.token = this.token
-      window.email = this.email
-      if (this.token != ""){
-        router.push('/create')
-      }
+          .then(response => {
+            this.token = response.data.data.logar.token
+            window.token = this.token
+            window.email = this.email
+            if (this.token != ""){
+              router.push('/create')
+            }
+          })
+          .catch(errors => {
+            console.log(errors.message)
+          })
+
+
+
     }
   },
 }

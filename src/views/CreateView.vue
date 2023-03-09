@@ -200,7 +200,7 @@
                           :rules="rules"
                           hide-details="auto"
                           v-model="inscri_estadual"
-                          v-mask="['##.###-###-###']"
+                          v-mask="['##.###.###.###']"
                       ></v-text-field>
                     </div>
                   </div>
@@ -377,20 +377,14 @@
                                 variant="outlined"
                                 filled
                                 :items="visibilidade"
-                                label="Visibilidade"
+                                v-model="visibilidadeSelecionada"
                                 multiple
+                                item-title="tipo"
                             ></v-select>
                       </div>
                     </v-card-text>
                     <v-card-actions>
                       <v-spacer></v-spacer>
-                      <v-btn
-                          color="blue-darken-1"
-                          variant="text"
-                          @click="dialog = false"
-                      >
-                        Cancelar
-                      </v-btn>
                       <v-btn
                           color="blue-darken-1"
                           type="submit"
@@ -425,7 +419,7 @@
 import axios from "axios";
 import router from "../router";
 import statesCities from "../assets/statesCities.json"
-import { setDoc, doc} from 'firebase/firestore/lite';
+import { setDoc, doc, collection} from 'firebase/firestore/lite';
 import arquivoTemplate from "@/libraries/templaProposta";
 
 
@@ -469,7 +463,13 @@ export default {
         {tipo: "Rejeitado"}
       ],
 
-      visibilidade: ['Usuário', 'Grupo', 'Completa', 'Somente dele(a)'],
+      visibilidadeSelecionada: {tipo: 'Somente dele'},
+      visibilidade: [
+        {tipo: 'Usuário'},
+        {tipo: 'Grupo'},
+        {tipo: 'Completa'},
+        {tipo: 'Somente dele(a)'}
+      ],
 
       /* Variaveis responsáveis por guardas os v-models dos inputs */
 
@@ -480,6 +480,7 @@ export default {
       papelId: null,
       empresa: null,
       empresaId: null,
+      tokenIframe: null,
       financiamento: null,
       representanteId: null,
       templateId: null,
@@ -511,12 +512,12 @@ export default {
       ex11: 'primary',
       show1: false,
       show2: true,
-      erro: [],
       response: '',
       overlay: false,
 
     });
   },
+
   watch: {
     overlay (val) {
       val && setTimeout(() => {
@@ -524,6 +525,7 @@ export default {
       }, 100000)
     },
   },
+
   /*
     Método que separa em um array (ususarioArray)
     os ususarios responsáveis cadastrados na plataforma
@@ -562,17 +564,25 @@ export default {
           for (var i = 0; i < this.tratarArray.length; i++) {
             this.usuarioArray.push(this.tratarArray[i].nome)
           }
+
           this.listarEmpresa()
           this.contarEmpresas()
           this.getPassword()
+
         })
+        .catch(errors => {
+          console.log(errors.message)
+        })
+
 
     let array1 = this.tratarArray
     const found = array1.find(data => data.email == window.email)
     this.voce = found
     console.log(this.voce.id)
   },
+
   methods: {
+
     /*
     Função responsável pela criação inicial da empresa e logo
     após ela inicia as outras requisições
@@ -619,25 +629,20 @@ export default {
         headers: headers,
         data: queryGraphql
       })
-
       /*
       Inicia o listarEmpresa para pegar o id da empresa que
        acabou de ser criada
        */
-
-      this.listarEmpresa()
-
-          .then(data => {
+          .then(response => {
+            this.listarEmpresa(),
             this.logarComoEmpresa()
-            this.enviaEmpresaFirestore()
           })
-
-
-          .catch(errors => {
-            console.log(errors.message)
+          .catch(function (errors) {
+            console.log(errors);
           })
 
     },
+
     getPassword() {
       var chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJLMNOPQRSTUVWXYZ!@#$%^&*()+?><:{}[]";
       var passwordLength = 10;
@@ -650,6 +655,7 @@ export default {
       this.numberSenha = password
       console.log(password)
     },
+
     /*
     Quando foi pego o id em listarEmpresa inicia-se o processo
     de logar como empresa, para que se possa dar continuidade
@@ -701,13 +707,19 @@ export default {
             console.log(this.empresaId)
             this.criarPapel()
           })
+          .catch(errors => {
+          console.log(errors.message)
+        })
+
+
 
     },
+
     /*
     Criar o papel é o responsável por criar uma vertente para
     o usuario gestor que é a vertente "representante".
      */
-    async  criarPapel(){
+    async criarPapel(){
       const url = "https://solicitasol.cordeiro.com.br/graphql"
 
       const query = "mutation CriarPapel($input: PapelCreateInput!) {\n " +
@@ -738,8 +750,13 @@ export default {
           .then(data => {
             this.listarPapeis()
           })
+          .catch(errors => {
+          console.log(errors.message)
+        })
+
 
     },
+
     /*
     listarPapeis pega os dados dos dois papeis, do admin e do
      usuario gestor, e automaticamente vincula o usuario ao
@@ -778,8 +795,13 @@ export default {
             console.log(this.papelId)
             this.paper = this.papelId
           })
+          .catch(errors => {
+          console.log(errors.message)
+        })
+
 
     },
+
     /*
     Método esta sendo ultilizado apenas para dar um numero
     ao email do gestor, apenas para não ficar em branco.
@@ -814,7 +836,11 @@ export default {
             this.numeroGestor = data.data.data.contarEmpresas
             this.emailGestor = `gestor${this.numeroGestor}@corsolar.com`
           })
+          .catch(errors => {
+          console.log(errors.message)
+        })
     },
+
     /*
     este método é o que efetivamente sobe os dados do usuario
     gestor para a API.
@@ -865,18 +891,18 @@ export default {
            */
 
           .then(
-            this.enviaRepresentanteFirestore(),
                 this.listarPapeis(),
                 this.adcionarPermissaoAoPapel(),
                 this.alterarPremissa(),
                 this.listarTemplate(),
           )
 
-          .catch(err => {
-            console.log(err)
-          })
+          .catch(errors => {
+          console.log(errors.message)
+        })
 
     },
+
     /*
     Método feito para listar os templates existentes e guardar
     numa variavel o valor nescessario para alteração do mesmo.
@@ -917,54 +943,37 @@ export default {
           })
     },
     /*
-    Método responsável por enviar a empresa bara o banco do firestore
-    até o momento no banco de testes.
+    Método responsável por enviar a empresa e o gestor para o banco do firestore
+    até o momento no banco de homologação
      */
     async enviaEmpresaFirestore(){
 
       window.db
 
       try {
-        const docRef = await setDoc(doc(db, "empresa", `EMPRESA.${this.empresa}`), {
-          nome: this.nomeEmpresa,
-          cidade: this.selectedCity,
-          cnpjCpf: this.cnpj,
-          estado: this.selectedState,
-          responsavelCriacao: this.usuarioAtribuido,
-          nomeUserResponsavel: this.nomeGestor,
-          emailUserResponsavel: this.emailGestor,
-          senhaUserResponsavel: this.numberSenha,
-          telefoneUserResponsavel: this.telefone
+        const docRef = await setDoc(doc(db, `/databases/cordeiro/contacts/svIntegrador.${this.empresa}`),{
+
+            approved: true,
+            name: this.nomeEmpresa,
+            cityName: this.selectedCity,
+            cnpj: this.cnpj,
+            stateName: this.selectedState,
+            email: this.emailAcesso,
+            reprePass: this.cadastraPassword,
+            creatorId: window.email,
+            ownerId: this.emailGestor,
+            ownerPass: this.numberSenha,
+            id: `svIntegrador.${this.empresa}`,
+            tokenIframe: this.tokenIframe,
+            contactProfileId: 3,
+
         });
         console.log("Document written with ID: ", this.empresa);
       } catch (e) {
         console.error("Error adding document: ", e);
       }
-    },
-    /*
-    Já este é responsável para enviar os dados dos gestores até o
-    firestore
-     */
-    async enviaRepresentanteFirestore(){
 
-      window.db
-
-      try {
-        const docRef = await setDoc(doc(db, "representante", `REPRESENTANTE.${this.numeroGestor}`),{
-          nome: this.nomeEmpresa,
-          email: this.emailAcesso,
-          senha: this.cadastraPassword
-        });
-        console.log("Document written with ID: ", this.numeroGestor);
-      } catch (e) {
-        console.error("Error adding document: ", e);
-      }
     },
-    /*
-    Lista as empresas existentes para pegar o numero do id da
-    empresa atual e gerar a criação de usuarios e a troca de
-    informações como premissas.
-      */
     async listarEmpresa() {
       const url = "https://solicitasol.cordeiro.com.br/graphql"
 
@@ -1007,6 +1016,7 @@ export default {
           })
 
     },
+
     /*
     Esta função seta automaticamente quais são as permissões
     do usuario dentro da plataforma.
@@ -1048,9 +1058,11 @@ export default {
 
       }
       if (i == this.permissaoKey.length){
+        this.listarIntegracaoSimuladorSolar(),
         this.deslogarComoEmpresa()
       }
     },
+
     /*
     Altera os dados de premissas como os que foram solicitados,
     automaticamente.
@@ -1161,6 +1173,7 @@ export default {
           })
 
     },
+
     /*
     Altera os custos de instalação como os que foram solictados,
     automaticamente.
@@ -1294,6 +1307,7 @@ export default {
           })
 
     },
+
     /*
     Lista o id dos financiamentos existentes para que seja
     possivel identificar o id desta empresa e configurar
@@ -1337,6 +1351,7 @@ export default {
           })
 
     },
+
     /*
     Lista a quantidade e o ID de representantes para que seja
     possivel identifica o representante que será responsável
@@ -1373,6 +1388,7 @@ export default {
             console.log(this.representanteId)
           })
     },
+
     /*
     Altera as necessidades de financiamento de cada projeto,
     automaticamente.
@@ -1446,6 +1462,7 @@ export default {
           data: queryGraphql
         })
     },
+
     /*
     Função responsável por setar automaticamente dados de
     integrações.
@@ -1549,7 +1566,7 @@ export default {
               "RO": 0.9,
               "RR": 0.9,
               "SC": 0.9,
-              "SP": 0.66,
+              "SP": 0.8,
               "SE": 0.8,
               "TO": 0.8
             },
@@ -1608,9 +1625,63 @@ export default {
 
           .then(data => {
             this.alteraTemplate()
-            console.log("Alterar nitegração simulador solar feito.")
+            console.log("Alterar integração simulador solar feito.")
           })
     },
+
+    /*
+    A função para listar a integração é ultilizada para a realização da busca do token de iframe de cada integrador designado.
+     */
+    async listarIntegracaoSimuladorSolar(){
+      const url = "https://solicitasol.cordeiro.com.br/graphql"
+
+      const query = "query ListarIntegracaoSimuladorSolar {\n" +
+          " listarIntegracaoSimuladorSolar {\n id\n token\n" +
+          " simuladorSolar {\n ativo\n tarifaCliente\n" +
+          " enviarNotificacaoSistema\n enviarNotificacaoEmail\n" +
+          " faturaCampoCustomizado\n topologia\n tipoTelhado\n" +
+          " fase\n taxaDesempenho\n tensaoRede\n desvioAzimutal\n" +
+          " inclinacao\n distribuidorID\n fornecedorID\n estilos" +
+          " {\n corPlanoFundo\n corTexto\n corBotaoFundo\n" +
+          " corBotaoTexto\n }\n captarLead {\n enviarNotificacao\n" +
+          " responsavelID\n usuariosEmail\n representanteID\n" +
+          " }\n criarProjeto {\n responsavelID\n etapaID\n" +
+          " representanteID\n }\n camposDimensionamento {\n distribuidorID\n campos {\n chave\n valor\n }\n }\n" +
+          " tarifas {\n AC\n AL\n AP\n AM\n BA\n CE\n DF\n ES\n" +
+          " GO\n MA\n MT\n MS\n MG\n PA\n PB\n PR\n PE\n PI\n" +
+          " RJ\n RN\n RS\n RO\n RR\n SC\n SP\n SE\n TO\n }\n" +
+          " textos {\n avisoLegal\n tituloPrincipal\n tituloDados\n" +
+          " tituloResultadoSimulacao\n infoSucesso\n botaoSimular\n" +
+          " botaoVoltar\n botaoSolicitarOrcamento\n botaoProsseguir\n" +
+          " potenciaInfo\n areaInfo\n precoInfo\n potenciaTitulo\n" +
+          " areaTitulo\n precoTitulo\n paybackTitulo\n" +
+          " retornoTitulo\n paybackInfo\n retornoInfo\n }\n }\n" +
+          " }\n}\n"
+
+      const headers = {
+        "Authorization": `Bearer ${window.token}`,
+        "content-type": "application/json"
+      }
+
+      const queryGraphql = {
+        "operationName": "ListarIntegracaoSimuladorSolar",
+        "query": query,
+        "variables": {}
+      }
+
+      const response = await axios({
+        url: url,
+        method: 'post',
+        headers: headers,
+        data: queryGraphql
+      })
+          .then(data => {
+            this.tokenIframe = data.data.data.listarIntegracaoSimuladorSolar.token
+            console.log(this.tokenIframe)
+            this.enviaEmpresaFirestore()
+          })
+    },
+
     /*
     Método para adiconar o raquivo doc na área de download do
     template
@@ -1646,6 +1717,7 @@ export default {
       })
 
     },
+
     /*
     Faz o logout de admin que é usado para realizar a criação
     do usuário gestor.
@@ -1679,6 +1751,7 @@ export default {
           })
 
     },
+
     /*
     Realiza o logout da aplicação quando soplicitado na barra
     de menu lateral.
