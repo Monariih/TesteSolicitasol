@@ -565,7 +565,6 @@ export default {
             this.usuarioArray.push(this.tratarArray[i].nome)
           }
 
-          this.listarEmpresa()
           this.contarEmpresas()
           this.getPassword()
 
@@ -634,8 +633,7 @@ export default {
        acabou de ser criada
        */
           .then(response => {
-            this.listarEmpresa(),
-            this.logarComoEmpresa()
+            this.listarEmpresa()
           })
           .catch(function (errors) {
             console.log(errors);
@@ -1012,7 +1010,8 @@ export default {
 
           .then(data =>{
             this.empresa = data.data.data.listarEmpresas[0].id
-            console.log(this.empresa)
+            console.log(this.empresa),
+            this.logarComoEmpresa()
           })
 
     },
