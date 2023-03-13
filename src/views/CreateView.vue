@@ -187,7 +187,6 @@
                       <v-text-field
                           variant="outlined"
                           label="CNPJ ou CPF"
-                          :rules="rules"
                           hide-details="auto"
                           v-model="cnpj"
                           v-mask="['###.###.###-##', '##.###.###/####-##']"
@@ -197,7 +196,6 @@
                       <v-text-field
                           variant="outlined"
                           label="Inscrição estadual"
-                          :rules="rules"
                           hide-details="auto"
                           v-model="inscri_estadual"
                           v-mask="['##.###.###.###']"
